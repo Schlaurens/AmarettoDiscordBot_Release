@@ -1,0 +1,53 @@
+{
+    "prefix": "!",
+    "token": "<token>",
+    "MONGODB_SRV":"<mongoDB-srv>",
+    "hushhush_numOfMoves" : 10,
+    "commandPermissions": 
+        {
+            "haltStop":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "hushhush":
+            [
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "reassignRoles":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "save":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "roast_add": [
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "roast_remove":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "picture_remove":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ]
+        }
+    
+}
