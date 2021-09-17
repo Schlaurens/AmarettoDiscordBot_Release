@@ -1,33 +1,26 @@
 module.exports = {
     name:'picture_remove',
-    async execute(message, args, timeStamp, permissions) {
-
-        const pictures_model = require('../../models/picturesSchema');
+    async execute(interaction, timeStamp, permissions, pictures_model, search_by_name) {
 
         // Permission check
-        if (!permissions.check_permissions("picture_remove", message.member)) {
-            message.channel.send('Insufficient permissions.');
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} tried to add a roast but has insufficient permissions`);
-            return;
+        if (!permissions.check_permissions("picture_remove", interaction.member)) {
+            await interaction.reply({content: '**Insufficient permissions.**', ephemeral: true});
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to add a roast but has insufficient permissions`);
         }
 
-        if (!args[2]) {
-            message.channel.send("Bitte gib den Index von dem zu löschenden Bild an.");
-            return;
-        }
+        const title = interaction.options.get("title").value;
+        var re = new RegExp(title.toLowerCase());
+        
+        search_by_name(re, title, async (picture) => {
+            if(picture !== undefined) {
+                let del_pic = await pictures_model.findOneAndDelete({name : picture["name"]});
 
-        let picture_count = await pictures_model.count();
-
-        //Check whether the index is valid
-        if (args[2] >= picture_count) {
-            message.channel.send("Ungültiger Index.");
-            return;
-        }
-        // Delete the picture
-        let del_pic = await pictures_model.findOneAndDelete().skip(args[2])
-       
-        console.log(`${timeStamp.getTimeStamp()} ${message.author.username} removed a picture. Name: ${del_pic["name"]} Index: ${args[2]}.`);
-
-        return;
+                await interaction.reply(`**${picture["name"]}** has been removed.`);
+                return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} removed a picture. Name: ${del_pic["name"]}.`);
+            }
+            else {
+                return await interaction.reply({content: "Picture not found.", ephemeral:true});
+            }
+        })
     }
 }

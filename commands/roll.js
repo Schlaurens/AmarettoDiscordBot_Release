@@ -1,21 +1,28 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
+    data: new SlashCommandBuilder()
+    .setName('roll')
+    .setDescription("Tosses a coin or a custom sided dice.")
+    .addNumberOption(option =>
+        option.setName("sides")
+        .setDescription('The number of sides the dice should have.')
+        .setRequired(false)),
     name: 'roll',
-    description: 'Tosses a coin (Heads or tails)',
-    execute(message, timeStamp, args){
+    description: 'Tosses a coin or a custom sided die.',
+    async execute(interaction, timeStamp){
 
-        var max;
+        const sides = interaction.options.get("sides");
         
-        if(!isNaN(args[1])) max = args[1];
-        else if (!args[1]) max = 6;
-        else {
-            message.channel.send("Gib als Argument eine Nummer an.");
-            return;
-        }
-        
-        var result = Math.floor(Math.random() * Math.floor(max)) + 1;
+        // Default number of sides is 6
+        const max = sides ? sides.value : 6
 
-        message.channel.send(result);
+        if (max <= 0) return await interaction.reply({content : "The number of sides should be positive.", ephemeral: true});
 
-        console.log(`${timeStamp.getTimeStamp()} ${message.author.username} rolled a ${result} on a ${max} sided die`);
+    
+        const result = Math.floor(Math.random() * Math.floor(max)) + 1;
+        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} rolled a ${result} on a ${max} sided dice.`);
+        return await interaction.reply(`**${result}**`);
+
     }
 }

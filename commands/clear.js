@@ -1,39 +1,49 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'clear',
-    description: 'deletes a given number of messages',
-    execute(message, args, timeStamp){
+    data: new SlashCommandBuilder()
+    .setName('clear')
+    .setDescription('Deletes a given number of messages.')
+    .addNumberOption(option =>
+        option
+        .setName('amount')
+        .setDescription('Amount of messages to be deleted')
+        .setRequired(true))
+    .addBooleanOption(option => 
+        option.setName("old")
+        .setDescription('Remove messages which are older than 14 days.')
+        .setRequired(false)),
 
-        var numOfMessages = args[1];
+    async execute(interaction, timeStamp){
 
+        var numOfMessages = interaction.options.get("amount").value;
 
-        //==== Permission Handler ====
-        //Only members with 'MANAGE_MESSAGES' permissions in the channel can use /clear
-        if(!message.member.hasPermission('MANAGE_MESSAGES')) {
+        // ==== Permission Handler ====
+        // Only members with 'MANAGE_MESSAGES' permissions in the channel can use /clear
+        if(!interaction.member.permissions.has('MANAGE_MESSAGES')) {
 
-            message.channel.send("Insufficient permissions.");
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} tried to clear numOfMessages but has insufficient permissions.`);
+            await interaction.reply({content : "**Insufficient permissions.**", ephemeral: true});
+            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to clear numOfMessages but has insufficient permissions.`);
 
             return;
         }
 
-        //==== Condition checking ====
-        if(!numOfMessages) return message.channel.send("Please specify the amount of messages you want deleted.");
-        if (isNaN(numOfMessages)) return message.channel.send(`${numOfMessages} is not a number.`);
-        if(numOfMessages >= 100) return message.channel.send("Cannot delete more than 99 messages at once.");
-        if(numOfMessages < 1) return message.channel.send("You have to delete at least one message.");
+        // ==== Condition checking ====
+        if(numOfMessages >= 100) return interaction.reply({content: "Cannot delete more than 99 messages at once.", ephemeral : true}); // for safety
+        if(numOfMessages < 1) return interaction.reply({content: "You have to delete at least one message.", ephemeral: true});
         
-        //Also delete the /clear command message.
-        numOfMessages++;
         
-        message.channel.bulkDelete(numOfMessages)
-        .then(data => {
-            numOfMessages--;
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} deleted ${numOfMessages} messages in the channel '${message.channel.name}'`);
+        interaction.channel.bulkDelete(numOfMessages, interaction.options.get("old"))
+        .then(async messages => {
+            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} deleted ${messages.size} messages in the channel '${interaction.channel.name}'. old = ${interaction.options.get("old")}`);
+            await interaction.reply({content: "**Success!**", ephemeral : false})
+            await interaction.deleteReply()
+            
         })
-        .catch(err => {
-            message.channel.send("Nachrichten, die älter als **14 Tage** sind können nicht gelöscht werden...")
-            numOfMessages--;
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} tried to delete ${numOfMessages} message in the channel '${message.channel.name}' but the message was older than 14 days`)
+        .catch(async err => {
+            await interaction.reply("Cannot delete messages which are older than 14 days.")
+            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to delete ${numOfMessages} message in the channel '${interaction.channel.name}' but the message was older than 14 days`)
         });
     }
 }

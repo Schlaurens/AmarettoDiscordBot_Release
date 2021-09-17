@@ -1,7 +1,47 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
+    data: new SlashCommandBuilder()
+    .setName('picture')
+    .setDescription("Posts funny pictures of the squad.")
+    .addSubcommand(subcommand =>
+        subcommand.setName("get")
+        .setDescription("Get a funny picture.")
+        .addStringOption(option =>
+            option.setName("title")
+            .setDescription("The title of the picture you want. (RegEx also works)")
+            .setRequired(false))
+        .addNumberOption(option => 
+            option.setName("index")
+            .setDescription("The index of picture you want.")
+            .setRequired(false)))
+    .addSubcommand(subcommand => 
+        subcommand.setName('save')
+        .setDescription("Saves a given picture in the pictures directory")
+        .addStringOption(option =>
+            option.setName('url')
+            .setDescription('url of the picture.')
+            .setRequired(true))
+        .addStringOption(option =>
+            option.setName('title')
+            .setDescription('Title of the picture.')
+            .setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand.setName("size")
+        .setDescription("Get the amount of picture in the database."))
+    .addSubcommand(subcommand =>
+        subcommand.setName("remove")
+        .setDescription("Removes a picture from the database.")
+        .addStringOption(option => 
+            option.setName("title")
+            .setDescription("The title of the picture to be removed.")
+            .setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand.setName("list")
+        .setDescription("Get a list of all pictures.")),
     name: 'picture',
-    description: 'Posts pictures from the database',
-    async execute(message, timeStamp, args, Discord, colors, fs) {
+    description: 'Posts funny pictures of the squad',
+    async execute(interaction, timeStamp, Discord, client, fs) {
 
         const permissions = require('../lib/permissions');
         const pictures_model = require('../models/picturesSchema');
@@ -14,62 +54,15 @@ module.exports = {
             subcommands.set(command.name, command);
         }
 
-        let pictures_count = await pictures_model.count();
-
-        //Send a specified picture (search by index)
-        if (args[1] && !isNaN(args[1]) && args[1] < pictures_count) {
-            
-            let picture = await pictures_model.findOne().skip(args[1]);
-
-            message.channel.send(picture["url"]);
-
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} requested a picture and got: ${picture["name"]}`);
-        }
-        //Send the list of all pictures
-        else if (args[1] && (args[1].toLowerCase() === "--file" || args[1].toLowerCase() === "-f")) {
-
-            subcommands.get('picture_file').execute(message, timeStamp);
-        }
-        //Send the number of all pictures
-        else if (args[1] && (args[1].toLowerCase() === "--number" || args[1].toLowerCase() === "-n")) {
-
-            subcommands.get('picture_number').execute(message, timeStamp);
-        }
-        //Removes the picture at the given index.
-        else if (args[1] && (args[1].toLowerCase() === "--remove" || args[1].toLowerCase() === "-r")) {
-            subcommands.get('picture_remove').execute(message, args, timeStamp, permissions);
-
-        }
-
-        //Send a specified picture (search by name)
-        else if (args[1] && isNaN(args[1])) {
-
-            var re = new RegExp(args[1].toLowerCase());
-             
-            search_by_name(re, args[1], async (i) => {
-                if (i !== undefined) {
-                    message.channel.send(i["url"]);
-                    console.log(`${timeStamp.getTimeStamp()} ${message.author.username} requested a picture and got: ${i["name"]}`);
-                    return;
-                }
-                message.channel.send("Nichts gefunden.");
-            });
-        }
-
-        //Send a random picture
-        else {
-
-            var random = Math.floor(Math.random() * pictures_count);
-
-            // Get picture from database
-            let picture = await pictures_model.findOne().skip(random);
-
-            // Send picture
-            message.channel.send(picture["url"]);
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} requested a picture and got: ${picture["name"]}`);
-        }
-
-
+        const subcommand = interaction.options._subcommand;
+        if(subcommand === 'get') return await subcommands.get('picture_get').execute(interaction, timeStamp, pictures_model, search_by_name);
+        if(subcommand === 'save') return await subcommands.get('picture_save').execute(interaction, timeStamp, permissions, pictures_model);
+        if(subcommand === 'size') return await subcommands.get('picture_size').execute(interaction, timeStamp, pictures_model);
+        if(subcommand === 'remove') return await subcommands.get('picture_remove').execute(interaction, timeStamp, permissions, pictures_model, search_by_name);
+        if(subcommand === 'list') return await subcommands.get('picture_list').execute(interaction, timeStamp, Discord, client, pictures_model)
+        
+        
+        
         //======== Functions ========
         /**
          * Search a picture with RegEx
@@ -80,11 +73,15 @@ module.exports = {
 
             const pictures_model = require('../models/picturesSchema')
 
-            if (await pictures_model.exists({name : { $regex: new RegExp('^'+ name + '$', "i")}})) {
-                return callback(await pictures_model.findOne({name : { $regex: new RegExp('^'+ name + '$', "i")}}));
-
+            // Contains parts of title 
+            if (await pictures_model.exists({name : { $regex: name, $options: "i"}})) {
+                return callback(await pictures_model.findOne({name : { $regex: name, $options: "i"}}));
             }
-
+            // Full title case insensitive
+            else if (await pictures_model.exists({name : { $regex: new RegExp('^'+ name + '$', "i")}})) {
+                return callback(await pictures_model.findOne({name : { $regex: new RegExp('^'+ name + '$', "i")}}));
+            }
+            // Pure regex
             if(await pictures_model.exists({name : {$regex: re}})) {
                 return callback(await pictures_model.findOne({name : {$regex: re}}));
             }

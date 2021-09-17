@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Universal Bot for Discord",
   "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,15 +13,19 @@
     "type": "git",
     "url": "git+https://github.com/Schlaurens/AmarettoDiscordBot_Release"
   },
-  "author": "Laurens S.",
-  "license": "MIT",
+  "author": "Laurens Schiefelbein",
+  "license": "ISC",
   "homepage": "https://github.com/Schlaurens/AmarettoDiscordBot_Release",
   "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/rest": "0.1.0-canary.0",
     "ajv": "^7.2.4",
-    "discord.js": "^12.5.3",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.1.0",
     "imgur": "^1.0.2",
     "mongoose": "^6.0.5",
     "node-image-downloader": "^1.0.7",
+    "nodemon": "^2.0.12",
     "opusscript": "0.0.7",
     "ytdl-core": "^3.4.2"
   }

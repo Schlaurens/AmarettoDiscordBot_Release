@@ -1,10 +1,14 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'ping',
-    description: 'replies to ping',
-    execute(message, timeStamp, client){
-        
-        message.channel.send(`Ping : **${Date.now() - message.createdTimestamp}ms** \nAPI Latency: **${Math.round(client.ws.ping)}ms**`)
+	data: new SlashCommandBuilder()
+		.setName('ping')
+		.setDescription('Returns the Ping and the API Latency.'),
+	async execute(interaction, timeStamp, client) {
+		await interaction.reply(`Ping : **${Date.now() - interaction.createdTimestamp}ms** \nAPI Latency: **${Math.round(client.ws.ping)}ms**`);
 
-        console.log(`${timeStamp.getTimeStamp()} ${message.author.username} pinged the bot`);
-    }
-}
+        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} pinged the bot`);
+        
+	},
+};

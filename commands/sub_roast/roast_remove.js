@@ -1,32 +1,31 @@
-const roast = require('../roast');
-
 module.exports = {
     name: 'roast_remove',
-    async execute(message, timeStamp, args, permissions) {
-
-        const roast_model = require('../../models/roastSchema');
+    async execute(interaction, timeStamp, permissions, roast_model) {
 
         //Check permissions
-        if (!permissions.check_permissions("roast_remove", message.member)) {
-            message.channel.send('Insufficient permissions.');
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} tried to add a roast but has insufficient permissions`);
-            return;
+        if (!permissions.check_permissions("roast_remove", interaction.member)) {
+            await interaction.reply({content : '**Insufficient permissions.**', ephemeral: true});
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to add a roast but has insufficient permissions`);
         }
         
-        if(!args[2]) {
-            message.channel.send("Bitte gib den Index von dem zu löschenden Roast an.");
-            return;
-        }
+        const roast_id = interaction.options.get("id").value;
+
+        let exists;
         try{
-            if(await roast_model.exists({_id : args[2]})) {
-                await roast_model.deleteOne({_id : args[2]});
-                message.channel.send("Roast wurde erfolgreich entfernt.")
-                console.log(`${timeStamp.getTimeStamp()} ${message.author.username} removed a roast.`);
-                return;
+            exists = await roast_model.exists({_id : roast_id});
+        }
+        catch(err) {
+            return await interaction.reply({content : "Invalid ID.", ephemeral: true});
+        }
+
+        try{
+            if(exists) {
+                await roast_model.deleteOne({_id : roast_id});
+                await interaction.reply("Roast has been removed.");
+                return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} removed a roast.`);
             }
             else {
-                message.channel.send("Ungültige ID");
-                return;
+                return await interaction.reply({content : "Invalid ID.", ephemeral: true});
             }
         }
         catch (err) {

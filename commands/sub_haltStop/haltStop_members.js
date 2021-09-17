@@ -1,17 +1,14 @@
 module.exports = {
     name:'haltStop_members',
-    async execute(message, timeStamp, fs) {
+    async execute(interaction, timeStamp, role_backup_model) {
 
-        const role_backup_model = require('../../models/roleBackupSchema');
-
-        //If no members in JSON
+        //If no members in database
         if(!await role_backup_model.exists()) {
-            message.channel.send("Das Backup ist leer.")
-            return;
+            return await interaction.reply({content : "The backup is empty.", ephemeral: false});
         }
 
         // Get backups from database
-        let backups = await role_backup_model.find();
+        const backups = await role_backup_model.find();
        
         // Get the names and timestamps from all members
         var backed_up_members = "";
@@ -19,10 +16,8 @@ module.exports = {
             backed_up_members += "\n**" + backups[i]["name"] + " -- " + backups[i]["timestamp"] + "**";
         }
 
-        //print String
-        message.channel.send(backed_up_members);
+        await interaction.reply(backed_up_members);
 
-        console.log(`${timeStamp.getTimeStamp()} ${message.author.username} listed members from Database.`);
-        return;
+        return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} listed members from Database.`);
     }
 }

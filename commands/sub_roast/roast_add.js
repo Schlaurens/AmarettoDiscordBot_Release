@@ -1,49 +1,42 @@
 module.exports = {
     name: 'roast_add',
+    async execute(interaction, timeStamp, permissions, roast_model) {
 
-    async execute(message, timeStamp, args, fs, permissions, roasts) {
-
-        const roast_model = require('../../models/roastSchema');
 
         //Check permissions
-        if(!permissions.check_permissions("roast_add", message.member)) {
-            message.channel.send('Insufficient permissions.');
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} tried to add a roast but has insufficient permissions`);
-            return;
+        if(!permissions.check_permissions("roast_add", interaction.member)) {
+            await interaction.reply({content : '**Insufficient permissions.**', ephemeral: true});
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to add a roast but has insufficient permissions`);
         }
 
-        if(!args[2]) {
-            message.channel.send("Bitte gib einen Roast an.")
-            return;
+        
+        const roastSentence = interaction.options.get("sentence").value;
+
+        // Check whether roast is too long (> 1024 characters)
+        if (roastSentence.length > 1024) {
+            return await interaction.reply({content : "Roast cannot be longer than 1024", ephemeral: true});
         }
-
-        //Remove first two elements from array
-        let roastSentence = args.splice(2).join(' ');
-
+        
         //Check whether roast already exists
         try{
             if(await roast_model.exists({roast : roastSentence})) {
-                message.channel.send("Dieser Roast existiert bereits.")
-                return; 
+                return await interaction.reply({content : "Roast already exists.", ephemeral:true});
             }
         }
         catch (err){
             console.log(err);
         }
 
-        // get amount of roast 
-        let index = await roast_model.count();
+        // get size of roast database
+        const index = await roast_model.count();
 
         let roast = await roast_model.create({
             roast: roastSentence
         });
-
         roast.save();
 
-        message.channel.send("Der Roast wurde erfolgreich hinzugefügt.");
+        await interaction.reply("Roast added.");
 
-        console.log(`${timeStamp.getTimeStamp()} ${message.author.username} added a new roast. Index: ${index}`);
-
-        return;
+        return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} added a new roast. Index: ${index}`);
     }
 }

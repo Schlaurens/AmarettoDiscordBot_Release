@@ -1,4 +1,3 @@
-const { Collection } = require('discord.js');
 const mongoose = require('mongoose');
 
 const role_backup_schema = new mongoose.Schema({
@@ -12,7 +11,6 @@ const role_backup_schema = new mongoose.Schema({
         color: {type: Number, required: true},
         hoist: {type: Boolean, required: true},
         rawPosition: {type: Number, required: true},
-        permissions: {type: Number, required: true},
         managed: {type: Boolean, required: true},
         mentionable: {type: Boolean, required: true},
         deleted: {type: Boolean, required: true},

@@ -1,10 +1,15 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
+    data: new SlashCommandBuilder()
+    .setName('smart')
+    .setDescription("Shows a picture of the smartest man alive."),
     name: 'smart',
-    description: 'Posts a picture of the smartest man alive',
-    execute(message, timeStamp, args){
+    description: 'Shows a picture of the smartest man alive.',
+    async execute(interaction, timeStamp){
 
-        message.channel.send({files: ['./assets/smart/cursedheimer.png']});
+        await interaction.reply({files: ['./assets/smart/cursedheimer.png']});
 
-        console.log(`${timeStamp.getTimeStamp()} ${message.author.username} used /smart`);
+        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} used /smart`);
     }
 }

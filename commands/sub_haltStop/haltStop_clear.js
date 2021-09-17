@@ -1,21 +1,18 @@
 module.exports = {
     name:'haltStop_clear',
-    async execute(message, timeStamp, fs) {
+    async execute(interaction, timeStamp, role_backup_model) {
         
-        const role_backup_model = require('../../models/roleBackupSchema');
-
         //Permission Check
-        if(!message.member.permissions.has('ADMINISTRATOR')) {
-            message.channel.send('Insufficient permissions.');
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} tried to backup roles but has insufficient permissions`);
-            return;
+        if(!interaction.member.permissions.has('ADMINISTRATOR')) {
+            await interaction.reply({content : '**Insufficient permissions.**', ephemeral : true});
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to backup roles but has insufficient permissions`);
         }
 
         try{
             // Delete all documents in the database
             await role_backup_model.deleteMany();
-            message.channel.send("Das Backup wurde gelöscht.");
-            console.log(`${timeStamp.getTimeStamp()} ${message.author.username} cleared the backup.`);
+            await interaction.reply("The backup has been cleared.");
+            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} cleared the backup.`);
         }
         catch (err) {
             console.log(err);

@@ -1,8 +1,8 @@
+  
 {
-    "prefix": "!",
     "token": "<token>",
+    "clientId": "<clientId>",
     "MONGODB_SRV":"<mongoDB-srv>",
-    "hushhush_numOfMoves" : 10,
     "commandPermissions": 
         {
             "haltStop":[
