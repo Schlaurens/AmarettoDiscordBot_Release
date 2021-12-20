@@ -24,7 +24,19 @@
                     "roleId": "<roleId>"
                 }
             ],
-            "save":[
+            "picture_save":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "picture_remove":[
+                {
+                    "rolename": "<rolename>",
+                    "roleId": "<roleId>"
+                }
+            ],
+            "picture_rename":[
                 {
                     "rolename": "<rolename>",
                     "roleId": "<roleId>"
@@ -37,12 +49,6 @@
                 }
             ],
             "roast_remove":[
-                {
-                    "rolename": "<rolename>",
-                    "roleId": "<roleId>"
-                }
-            ],
-            "picture_remove":[
                 {
                     "rolename": "<rolename>",
                     "roleId": "<roleId>"

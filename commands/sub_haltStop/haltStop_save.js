@@ -1,8 +1,8 @@
 module.exports = {
     name:'haltStop_save',
-    async execute(interaction, timeStamp, role_backup_model) {
+    async execute(interaction, timeStamp, role_backup_model, user_command) {
 
-        const member = interaction.options.get("member").member;
+        const member = user_command ? interaction.options.getMember("user") : interaction.options.get("member").member;
 
         // Collection of all the roles for a given member.
         const roleCollection = member.roles.cache;
@@ -22,6 +22,6 @@ module.exports = {
 
         await role_backup.save();
         await interaction.reply(`**${member.user.username}'s** roles were saved.`);
-        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} saved roles for ${member.user.username}`);
+        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} saved roles for ${member.user.username}. user_command = ${user_command}`);
     }
 }

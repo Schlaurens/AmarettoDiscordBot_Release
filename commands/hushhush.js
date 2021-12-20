@@ -1,22 +1,26 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-    .setName('hushhush')
-    .setDescription("Moves a member through multiple channels in order to wake him/her up.")
-    .addUserOption(option => 
-        option.setName("member")
-        .setDescription("The member who is about to be moved around.")
-        .setRequired(true))
-    .addNumberOption(option => 
-        option.setName("moves")
-        .setDescription("The amount of channels the member will be moved through.")
-        .setRequired(false)
-        .addChoice("5", 5)
-        .addChoice("10", 10)),
     name: 'hushhush',
     description: 'Moves a member through multiple channels in order to wake them up.',
-    async execute(interaction, timeStamp, fs){
+    data: new SlashCommandBuilder()
+        .setName('hushhush')
+        .setDescription("Moves a member through multiple channels in order to wake him/her up.")
+        .addUserOption(option => 
+            option.setName("member")
+            .setDescription("The member who is about to be moved around.")
+            .setRequired(true))
+        .addNumberOption(option => 
+            option.setName("moves")
+            .setDescription("The amount of channels the member will be moved through.")
+            .setRequired(false)
+            .addChoice("5", 5)
+            .addChoice("10", 10)),
+    user_command: {
+        "name": "HushHush",
+        "type": 2
+    },
+    async execute(interaction, timeStamp, user_command){
         
         //Used to check permissions of a given member
         const permissions = require('../lib/permissions');
@@ -29,16 +33,16 @@ module.exports = {
         //Check Permissions
         if (!permissions.check_permissions("hushhush", interaction.member)) {
             await interaction.reply({content : '**Insufficient permissions.**', ephemeral : true});
-            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to hushhush a member but has insufficient permissions`);
-            return;
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to hushhush a member but has insufficient permissions. user_command = ${user_command}`);
         }
         
         //========= Moving =============
-        const member = interaction.options.get("member").member;
+        const member = user_command ? interaction.options.getMember("user") : interaction.options.get("member").member;
+
         var currentChannel = member.voice.channelId;
 
         if(!member.voice.channelId) {
-            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} hushhush'd ${interaction.options.get("member").user.username} but was not online`);
+            console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} hushhush'd ${member.user.username} but was not online. user_command = ${user_command}`);
             return await interaction.reply({content : "Member is not online.", ephemeral : true});
             
         }
@@ -62,7 +66,7 @@ module.exports = {
         })
         member.voice.setChannel(currentChannel);
     
-        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} hushhush'd ${interaction.options.get("member").user.username}`);
-        return await interaction.reply({content: `${interaction.options.get("member").user.username} got hushhush'd ${numOfMoves} times.`, ephemeral: true});
+        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} hushhush'd ${member.user.username}. user_command = ${user_command}`);
+        return await interaction.reply({content: `${member.user.username} got hushhush'd ${numOfMoves} times.`, ephemeral: true});
     }
 }

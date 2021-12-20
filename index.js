@@ -10,18 +10,16 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 let commands = [];
 
-
 //Parse config.json
 var data = fs.readFileSync('./config.json');
 var config = JSON.parse(data);
 
 const token = config["token"];
 
-
 global.servers = {};
 
 client.on('ready', () => {
-    client.user.setActivity(`mit deiner Mudda 187 | /help`);
+    client.user.setActivity(`with cat toys | /help`);
 
     console.log(`${timeStamp.getTimeStamp()} Amaretto herrscht!`)
 })
@@ -34,16 +32,17 @@ for(const file of commandFiles) {
     client.commands.set(command.name, command);
 
     commands.push((command.data))
+
+    //for User Commands
+    if(command.user_command) commands.push(command.user_command);
 }
 
 // Slash Commands
-//const guildId = ''; //<-- For Development
-//const clientId = ''; //<-- Test Client
 const clientId = config['clientId']; //<-- Main Client
 const rest = new REST({ version: '9' }).setToken(token);
 (async () => {
 	try {
-		console.log('Started refreshing application (/) commands.');
+		console.log(`${timeStamp.getTimeStamp()} Started refreshing application (/) commands.`);
 
 		await rest.put(
             //Routes.applicationGuildCommands(clientId, guildId), // <-- For Development
@@ -51,27 +50,39 @@ const rest = new REST({ version: '9' }).setToken(token);
 			 {body : commands} ,
 		);
 
-		console.log('Successfully reloaded application (/) commands.');
+		console.log(`${timeStamp.getTimeStamp()} Successfully reloaded application (/) commands.`);
 	} catch (error) {
 		console.error(error);
 	}
 })();
 
 client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isCommand()) return;
-    
-	if (interaction.commandName === 'ping') await client.commands.get('ping').execute(interaction, timeStamp, client);
-	if (interaction.commandName === 'clear') await client.commands.get('clear').execute(interaction, timeStamp);
-    if (interaction.commandName === 'reassignroles') await client.commands.get('reassignRoles').execute(interaction, timeStamp);
-    if (interaction.commandName === 'hushhush') await client.commands.get('hushhush').execute(interaction, timeStamp, fs);
-    if (interaction.commandName === 'roll') await client.commands.get('roll').execute(interaction, timeStamp);
-    if (interaction.commandName === 'serverinfo') await client.commands.get('serverinfo').execute(interaction, Discord, colors, timeStamp);
-    if (interaction.commandName === 'userinfo') await client.commands.get('userinfo').execute(interaction, Discord, colors, timeStamp);
-    if (interaction.commandName === 'haltstop') await client.commands.get('haltStop').execute(interaction, timeStamp, fs, Discord);
-    if (interaction.commandName === 'smart') await client.commands.get('smart').execute(interaction, timeStamp);
-    if (interaction.commandName === 'picture') await client.commands.get('picture').execute(interaction, timeStamp, Discord, client, fs);
-    if (interaction.commandName === 'roast') await client.commands.get('roast').execute(interaction, timeStamp, client, fs);
-    if (interaction.commandName === 'help') await client.commands.get('help').execute(interaction, Discord, colors, client, timeStamp, commands);
+
+    if (interaction.isCommand()) {;
+        if (interaction.commandName === 'ping') await client.commands.get('ping').execute(interaction, timeStamp, client);
+        if (interaction.commandName === 'clear') await client.commands.get('clear').execute(interaction, timeStamp);
+        if (interaction.commandName === 'reassignroles') await client.commands.get('reassignRoles').execute(interaction, timeStamp);
+        if (interaction.commandName === 'hushhush') await client.commands.get('hushhush').execute(interaction, timeStamp);
+        if (interaction.commandName === 'roll') await client.commands.get('roll').execute(interaction, timeStamp);
+        if (interaction.commandName === 'serverinfo') await client.commands.get('serverinfo').execute(interaction, Discord, colors, timeStamp);
+        if (interaction.commandName === 'userinfo') await client.commands.get('userinfo').execute(interaction, Discord, colors, timeStamp);
+        if (interaction.commandName === 'haltstop') await client.commands.get('haltStop').execute(interaction, timeStamp, fs, Discord);
+        if (interaction.commandName === 'smart') await client.commands.get('smart').execute(interaction, timeStamp);
+        if (interaction.commandName === 'picture') await client.commands.get('picture').execute(interaction, timeStamp, Discord, client, fs);
+        if (interaction.commandName === 'roast') await client.commands.get('roast').execute(interaction, timeStamp, client, fs);
+        if (interaction.commandName === 'help') await client.commands.get('help').execute(interaction, Discord, colors, client, timeStamp, commands);
+        if (interaction.commandName === 'permissions') await client.commands.get('permissions').execute(interaction, timeStamp, fs);
+        if (interaction.commandName === 'avatar') await client.commands.get('avatar').execute(interaction, timeStamp, Discord, colors);
+    }
+    // For User Commands
+    else if (interaction.isContextMenu()) {
+        if (interaction.commandName === 'Avatar') await client.commands.get('avatar').execute(interaction, timeStamp, Discord, colors, user_command = true);
+        if (interaction.commandName === 'HushHush') await client.commands.get('hushhush').execute(interaction, timeStamp, user_command = true);
+        if (interaction.commandName === 'Info') await client.commands.get('userinfo').execute(interaction, Discord, colors, timeStamp, user_command = true);
+        if (interaction.commandName === 'HaltStop') await client.commands.get('haltStop').execute(interaction, timeStamp, fs, Discord, user_command = true);
+        if (interaction.commandName === 'Roast') await client.commands.get('roast').execute(interaction, timeStamp, client, fs, user_command = true);
+    }
+    else return;
 });
 
 //MongoDB

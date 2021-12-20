@@ -1,24 +1,36 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-    .setName('userinfo')
-    .setDescription("Displays the info a user.")
-    .addUserOption(options =>
-        options.setName('user')
-        .setDescription('User to get information about.')
-        .setRequired(true)),
     name: 'userinfo',
     description: 'Displays the info a user.',
-    async execute(interaction, Discord, colors, timeStamp){
+    data: new SlashCommandBuilder()
+        .setName('userinfo')
+        .setDescription("Displays the info a user.")
+        .addUserOption(options =>
+            options.setName('user')
+            .setDescription('User to get information about.')
+            .setRequired(true)),
+    user_command: {
+        "name": "Info",
+        "type": 2
+    },
+    async execute(interaction, Discord, colors, timeStamp, user_command){
         
-        const user = interaction.options.get("user").user;
-        const member = interaction.options.get("user").member;
+        const member = user_command ? interaction.options.getMember("user") : interaction.options.get("user").member;
+
+        const user = member.user;
         const nickname = member.nickname ? member.nickname : '---';
         const status = member.voice.channelId ? 'In Channel' : 'Not in Channel';
         const dateJoinedServer = member.joinedAt;
         const dateCreatedUser = member.user.createdAt;
-        const premiumSince = member.premiumSince ? member.premiumSince : 'Not Boosting';
+        const premiumSince = member.premiumSince ? `${member.premiumSince.getDate()}.${member.premiumSince.getMonth() + 1}.${member.premiumSince.getFullYear()}` : 'Not Boosting';
+        var roleCollection = member.roles.cache;
+        
+        //Reduce the number of displayed roles to 20. If the amount is lesser than 20 nothing is done.
+        while(roleCollection.size > 20) {
+            //Remove the first roles in the collection
+            roleCollection.delete(roleCollection.firstKey());
+        }
         
         const sEmbed = new Discord.MessageEmbed()
         .setColor(colors.blue_dark)
@@ -36,7 +48,7 @@ module.exports = {
         
         await interaction.reply({embeds: [sEmbed]});
 
-        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} viewed Userinfo of ${user.username}`);
+        console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} viewed Userinfo of ${user.username}. user_command = ${user_command}`);
         
     }
 }

@@ -6,9 +6,9 @@ module.exports = {
         const imgur = require('imgur');
 
         //Check Permissions
-        if (!permissions.check_permissions("save", interaction.member)) {
+        if (!permissions.check_permissions("picture_save", interaction.member)) {
             await interaction.reply({content : '**Insufficient permissions.**', ephemeral: true});
-            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to backup roles but has insufficient permissions`);
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to save a picture but has insufficient permissions`);
         }
 
         const imgName = interaction.options.get("title").value;

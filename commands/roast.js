@@ -1,40 +1,44 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-    .setName('roast')
-    .setDescription("Roasts a certain person.")
-    .addSubcommand(subcommand =>
-        subcommand.setName("get")
-        .setDescription("Roast somebody!")
-        .addUserOption(option =>
-            option.setName("member")
-            .setDescription("The Person you want to roast.")
-            .setRequired(false))
-        .addStringOption(option =>
-            option.setName("name")
-            .setDescription("The name of the person you want to roast.")
-            .setRequired(false)))
-    .addSubcommand(subcommand =>
-        subcommand.setName("add")
-        .setDescription("Add a new roast.")
-        .addStringOption(option =>
-            option.setName("sentence")
-            .setDescription("The roast. $name$ represents the name of the roastee.")
-            .setRequired(true)))
-    .addSubcommand(subcommand =>
-        subcommand.setName("remove")
-        .setDescription("Remove a roast by it's ID.")
-        .addStringOption(option =>
-            option.setName("id")
-            .setDescription("The ID of the roast to be removed.")
-            .setRequired(true)))
-    .addSubcommand(subcommand =>
-        subcommand.setName("list")
-        .setDescription("Get a list of all roasts and their IDs.")),
     name: 'roast',
     description: 'Roasts a certain person.',
-    async execute(interaction, timeStamp, client, fs) {
+    data: new SlashCommandBuilder()
+        .setName('roast')
+        .setDescription("Roasts a certain person.")
+        .addSubcommand(subcommand =>
+            subcommand.setName("get")
+            .setDescription("Roast somebody!")
+            .addUserOption(option =>
+                option.setName("member")
+                .setDescription("The Person you want to roast.")
+                .setRequired(false))
+            .addStringOption(option =>
+                option.setName("name")
+                .setDescription("The name of the person you want to roast.")
+                .setRequired(false)))
+        .addSubcommand(subcommand =>
+            subcommand.setName("add")
+            .setDescription("Add a new roast.")
+            .addStringOption(option =>
+                option.setName("sentence")
+                .setDescription("The roast. $name$ represents the name of the roastee.")
+                .setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand.setName("remove")
+            .setDescription("Remove a roast by it's ID.")
+            .addStringOption(option =>
+                option.setName("id")
+                .setDescription("The ID of the roast to be removed.")
+                .setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand.setName("list")
+            .setDescription("Get a list of all roasts and their IDs.")),
+    user_command: {
+        "name": "Roast",
+        "type": 2
+    },   
+    async execute(interaction, timeStamp, client, fs, user_command) {
 
         const Discord = require('discord.js')
         const permissions = require('../lib/permissions');
@@ -51,7 +55,7 @@ module.exports = {
         const subcommand = interaction.options._subcommand;
         if (subcommand === 'add') await subcommands.get('roast_add').execute(interaction, timeStamp, permissions, roast_model);
         if (subcommand === 'remove') await subcommands.get('roast_remove').execute(interaction, timeStamp, permissions, roast_model);
-        if (subcommand === 'get') await subcommands.get('roast_get').execute(interaction, timeStamp, roast_model, get_roast);
+        if (subcommand === 'get' || user_command) await subcommands.get('roast_get').execute(interaction, timeStamp, roast_model, get_roast, user_command);
         if (subcommand === 'list') await subcommands.get('roast_list').execute(interaction, timeStamp, Discord, client, roast_model); 
         
 

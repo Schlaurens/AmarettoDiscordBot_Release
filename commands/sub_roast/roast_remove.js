@@ -5,7 +5,7 @@ module.exports = {
         //Check permissions
         if (!permissions.check_permissions("roast_remove", interaction.member)) {
             await interaction.reply({content : '**Insufficient permissions.**', ephemeral: true});
-            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to add a roast but has insufficient permissions`);
+            return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.username} tried to remove a roast but has insufficient permissions`);
         }
         
         const roast_id = interaction.options.get("id").value;

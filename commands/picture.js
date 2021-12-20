@@ -38,7 +38,18 @@ module.exports = {
             .setRequired(true)))
     .addSubcommand(subcommand =>
         subcommand.setName("list")
-        .setDescription("Get a list of all pictures.")),
+        .setDescription("Get a list of all pictures."))
+    .addSubcommand(subcommand =>
+        subcommand.setName("rename")
+        .setDescription("Rename a picture.")
+        .addStringOption(option =>
+            option.setName("current_title")
+            .setDescription("The current title of the picture.")
+            .setRequired(true))
+        .addStringOption(option =>
+            option.setName("new_title")
+            .setDescription("The new title for the picture.")
+            .setRequired(true))),
     name: 'picture',
     description: 'Posts funny pictures of the squad',
     async execute(interaction, timeStamp, Discord, client, fs) {
@@ -59,8 +70,8 @@ module.exports = {
         if(subcommand === 'save') return await subcommands.get('picture_save').execute(interaction, timeStamp, permissions, pictures_model);
         if(subcommand === 'size') return await subcommands.get('picture_size').execute(interaction, timeStamp, pictures_model);
         if(subcommand === 'remove') return await subcommands.get('picture_remove').execute(interaction, timeStamp, permissions, pictures_model, search_by_name);
-        if(subcommand === 'list') return await subcommands.get('picture_list').execute(interaction, timeStamp, Discord, client, pictures_model)
-        
+        if(subcommand === 'list') return await subcommands.get('picture_list').execute(interaction, timeStamp, Discord, client, pictures_model);
+        if(subcommand === 'rename') return await subcommands.get('picture_rename').execute(interaction, timeStamp, permissions, pictures_model, search_by_name);
         
         
         //======== Functions ========
