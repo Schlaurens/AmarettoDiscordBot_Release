@@ -36,8 +36,8 @@ let commands: typeof Collection = [];
 var data: string = fs.readFileSync(path.join(__dirname, '../config.json'));
 var config: any = JSON.parse(data);
 
-// const token = config["token"]; //<--- Your token here
-const token = config["testToken"]; //<--- Test token
+const token = config["token"]; //<--- Your token here
+// const token = config["testToken"]; //<--- Test token
 
 client.on('ready', () => {
     client.user.setActivity(`in deiner Wand`);
@@ -58,17 +58,17 @@ for(const file of commandFiles) {
 }
 
 // Slash Commands
-const guildId: string = config["guildId_test"]; //<-- For Development
-const clientId: string = config["clientId_test"]; //<-- Test Client
-// const clientId: string = config["clientId"]; //<-- Main Client
+// const guildId: string = config["guildId_test"]; //<-- For Development
+// const clientId: string = config["clientId_test"]; //<-- Test Client
+const clientId: string = config["clientId"]; //<-- Main Client
 
 const rest = new REST({ version: '10' }).setToken(token);
 (async () => {
 	try {
 		console.log(`${timeStamp.getTimeStamp()} Started refreshing application (/) commands.`);
 		await rest.put(
-            Routes.applicationGuildCommands(clientId, guildId), // <-- For Development
-			// Routes.applicationCommands(clientId),
+           		// Routes.applicationGuildCommands(clientId, guildId), // <-- For Development
+			Routes.applicationCommands(clientId),
 			{body : commands} ,
 		);
 
