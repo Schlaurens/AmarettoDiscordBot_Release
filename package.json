@@ -26,7 +26,7 @@
     "discord-api-types": "^0.37.19",
     "discord.js": "^14.6.0",
     "imgur": "^1.0.2",
-    "mongoose": "~7.6.3",
+    "mongoose": "~7.8.3",
     "node-image-downloader": "^1.0.7",
     "nodemon": "^3.0.1",
     "npm": "^10.2.1",
