@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 
 const { 
-     Collection
+    Collection
 } = require('discord.js');
 
 const permissions = require('../lib/permissions.ts');

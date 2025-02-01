@@ -1,17 +1,20 @@
 import { 
-    ChatInputCommandInteraction 
+    ChatInputCommandInteraction, 
+    MessageFlags
 } from 'discord.js';
+import type {Model} from 'mongoose';
+import { Picture_Interface } from '../../models/picturesSchema';
 
 module.exports = {
     name: 'picture_save',
     description: 'Saves a given picture in the pictures directory',
-    async execute(interaction: ChatInputCommandInteraction, timeStamp: any, permissions: any, picture_model: any){
+    async execute(interaction: ChatInputCommandInteraction, timeStamp: any, permissions: any, picture_model: Model<Picture_Interface>) {
 
         const imgur = require('imgur');
 
         //Check Permissions
         if (!permissions.check_permissions("picture_save", interaction.member)) {
-            await interaction.reply({content : '**Insufficient permissions.**', ephemeral: true});
+            await interaction.reply({content : '**Insufficient permissions.**', flags: MessageFlags.Ephemeral});
             return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to save a picture but has insufficient permissions`);
         }
 
@@ -20,15 +23,15 @@ module.exports = {
         
         //Check whether the image name or link is already in the pictures database.
         if(await picture_model.exists({name : { $regex: new RegExp('^'+ imgName + '$', "i")}})) {
-            return await interaction.reply({content : `The title **\"${imgName}\"** is already taken.`, ephemeral: true})
+            return await interaction.reply({content : `The title **\"${imgName}\"** is already taken.`, flags: MessageFlags.Ephemeral})
         }
         else if (await picture_model.exists({url : url})) {
-            return await interaction.reply({content : "This picture has already been saved under a different name.", ephemeral: true});
+            return await interaction.reply({content : "This picture has already been saved under a different name.", flags: MessageFlags.Ephemeral});
         }
 
         //Upload URL to Imgur 
         uploadToImgur(url as string, async (imgLink: string) => {
-            const picture_count = await picture_model.count();
+            const picture_count = await picture_model.countDocuments();
             
             // Insert into database
             let picture = await picture_model.create({

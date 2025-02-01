@@ -6,7 +6,8 @@ import {
     EmbedBuilder,
     GuildMember,
     User,
-    Colors 
+    Colors,
+    MessageFlags 
 } from 'discord.js';
 
 const timeStamp = require('../lib/timeStamp.ts');
@@ -57,7 +58,7 @@ module.exports = {
                 const sEmbed = new EmbedBuilder()
                 .setColor(Colors.DarkBlue)
                 .setDescription(`Couldn't find user **${(interaction as ChatInputCommandInteraction).options.getUser("member")?.tag}**`)
-                await interaction.reply({embeds: [sEmbed], ephemeral: true});
+                await interaction.reply({embeds: [sEmbed], flags: MessageFlags.Ephemeral});
 
                 console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to view the avatar of an unknown user ${interaction.options.data[0]?.value ?? "Unknown"}.`);
                 return
@@ -74,7 +75,7 @@ module.exports = {
             .setTitle("Avatar")
             .setImage((target as GuildMember | User)?.displayAvatarURL() + '?size=4096'); //Upscale image to size 4096
 
-        await interaction.reply({embeds : [avatarEmbed], ephemeral: false});
+        await interaction.reply({embeds : [avatarEmbed]});
 
         console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} viewed ${user?.displayName ?? "Unknown"}'s avatar. user_command = ${user_command}`);
 	},

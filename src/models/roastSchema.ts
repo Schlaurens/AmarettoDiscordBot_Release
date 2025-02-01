@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
-const roast_schema = new mongoose.Schema({
+export interface Roast_Interface {
+    roast: string;
+}
+
+const roast_schema = new mongoose.Schema<Roast_Interface>({
     roast: {type: String, require: true}
 })
 

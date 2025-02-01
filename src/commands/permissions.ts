@@ -4,7 +4,8 @@ import {
     UserContextMenuCommandInteraction, 
     ChatInputCommandInteraction, 
     GuildMember, 
-    PermissionResolvable 
+    PermissionResolvable, 
+    MessageFlags
 } from "discord.js";
 
 const fs = require('fs');
@@ -39,7 +40,7 @@ module.exports = {
 
         if(!member) {
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to view permissions but no target member was found. user_command = ${user_command}`);
-            return await interaction.reply({content : "No member was found.", ephemeral : true});
+            return await interaction.reply({content : "No member was found.", flags: MessageFlags.Ephemeral});
         }
 
         const command_permissions = Object.keys(config.commandPermissions);
@@ -53,7 +54,7 @@ module.exports = {
             response += `${p}: **${permissions.check_permissions(p, member)}**\n`;
         })
 
-        await interaction.reply({content: response, ephemeral: true});
+        await interaction.reply({content: response, flags: MessageFlags.Ephemeral});
         return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} viewed the permissions of ${member.displayName}.`);
 	}
 };

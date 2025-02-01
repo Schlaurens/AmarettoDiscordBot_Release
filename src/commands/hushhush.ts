@@ -5,7 +5,8 @@ import {
     GuildMember, 
     SlashCommandBuilder, 
     GuildVoiceChannelResolvable,
-    ChannelType 
+    ChannelType, 
+    MessageFlags
 } from 'discord.js';
 
 const timeStamp = require('../lib/timeStamp.ts');
@@ -36,7 +37,7 @@ module.exports = {
 
         //Check Permissions
         if (!permissions.check_permissions("hushhush", interaction.member)) {
-            await interaction.reply({content : '**Insufficient permissions.**', ephemeral : true});
+            await interaction.reply({content : '**Insufficient permissions.**', flags: MessageFlags.Ephemeral});
             return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to hushhush a member but has insufficient permissions. user_command = ${user_command}`);
         }
 
@@ -45,7 +46,7 @@ module.exports = {
 
         if(!member) {
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} hushhush'd a member but no member was found. user_command = ${user_command}`);
-            return await interaction.reply({content : "No member was found.", ephemeral : true});
+            return await interaction.reply({content : "No member was found.", flags: MessageFlags.Ephemeral});
         }
         member = member as GuildMember;
         
@@ -53,14 +54,14 @@ module.exports = {
 
         if(!member.voice.channelId) {
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} hushhush'd ${member.displayName} but was not online. user_command = ${user_command}`);
-            return await interaction.reply({content : "Member is not online.", ephemeral : true});
+            return await interaction.reply({content : "Member is not online.", flags: MessageFlags.Ephemeral});
         }
 
         //get all the voice channels and exclude the currentChannel
         var channels = interaction.guild?.channels.cache.filter(channel => channel.type === ChannelType.GuildVoice);
         if(!channels) {
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} hushhush'd ${member.displayName} but no voice channels were found. user_command = ${user_command}`);
-            return await interaction.reply({content : "No voice channels were found.", ephemeral : true});
+            return await interaction.reply({content : "No voice channels were found.", flags: MessageFlags.Ephemeral});
         }
         channels.delete(currentChannel);
 
@@ -81,6 +82,6 @@ module.exports = {
         member.voice.setChannel(currentChannel);
 
         console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} hushhush'd ${member.displayName}. user_command = ${user_command}`);
-        return await interaction.reply({content: `${member.displayName} got hushhush'd ${numOfMoves} times.`, ephemeral: true});
+        return await interaction.reply({content: `${member.displayName} got hushhush'd ${numOfMoves} times.`, flags: MessageFlags.Ephemeral});
     }
 }

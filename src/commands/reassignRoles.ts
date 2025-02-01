@@ -2,7 +2,8 @@ import {
     SlashCommandUserOption, 
     GuildMember, 
     ChatInputCommandInteraction,
-    SlashCommandBuilder 
+    SlashCommandBuilder, 
+    MessageFlags
 } from 'discord.js';
 
 const timeStamp = require('../lib/timeStamp.ts');
@@ -24,7 +25,7 @@ module.exports = {
 
         //Check permissions
         if(!permissions.check_permissions("reassignRoles", interaction.member)) {
-            await interaction.reply({content : "**Insufficient permissions.**", ephemeral: true});
+            await interaction.reply({content : "**Insufficient permissions.**", flags: MessageFlags.Ephemeral});
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to reassign roles but has insufficient permissions`);
             return;
         }
@@ -34,7 +35,7 @@ module.exports = {
 
         // Check whether the member has a backup
         if(!await role_backup_model.exists({user_id : member.id})) {
-            await interaction.reply({content: `**${member.displayName}'s roles are not backed up.**`, ephemeral:true})
+            await interaction.reply({content: `**${member.displayName}'s roles are not backed up.**`, flags: MessageFlags.Ephemeral})
             return;
         }
 

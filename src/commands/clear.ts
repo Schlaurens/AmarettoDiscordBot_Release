@@ -7,7 +7,8 @@ import {
   Message,
   GuildMember,
   PermissionResolvable,
-  SlashCommandBuilder 
+  SlashCommandBuilder,
+  MessageFlags 
 } from 'discord.js';
 
 const {
@@ -42,7 +43,7 @@ module.exports = {
         // ==== Permission Handler ====
         // Only members with 'MANAGE_MESSAGES' permissions in the channel can use /clear
         if(!member || (!member?.permissions.has('MANAGE_MESSAGES' as PermissionResolvable))) {
-            await interaction.reply({content : "**Insufficient permissions.**", ephemeral: true});
+            await interaction.reply({content : "**Insufficient permissions.**", flags: MessageFlags.Ephemeral});
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to clear numOfMessages but has insufficient permissions.`);
 
             return;
@@ -51,7 +52,7 @@ module.exports = {
         await channel?.bulkDelete(numOfMessages, true).then((messages: Collection<Snowflake, Message>) => {
 
           if(messages.size == 0) {
-            interaction.reply({ content: "No messages were deleted. Messages probably were older than 14 days.", ephemeral: true })
+            interaction.reply({ content: "No messages were deleted. Messages probably were older than 14 days.", flags: MessageFlags.Ephemeral })
             .catch(console.error);
             return;
           }
@@ -59,11 +60,11 @@ module.exports = {
           interaction
           .reply({
             content: `Successfully cleared **${messages.size}** messages in **${channel.name}**.`,
-            fetchReply: true, 
+            withResponse: true, 
           })
-          .then((message) => {
+          .then((response) => {
             setTimeout(() => {
-              message.delete();
+              response.resource?.message?.delete();
             }, 350);
           })
           .catch(console.error)

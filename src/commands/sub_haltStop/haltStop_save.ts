@@ -2,12 +2,15 @@ import {
     ChatInputCommandInteraction, 
     GuildMemberRoleManager, 
     UserContextMenuCommandInteraction, 
-    GuildMember 
+    GuildMember, 
+    MessageFlags
 } from 'discord.js';
+import type { Model } from 'mongoose';
+import { RoleBackup_Interface } from '../../models/roleBackupSchema';
     
 module.exports = {
     name:'haltStop_save',
-    async execute(interaction: ChatInputCommandInteraction | UserContextMenuCommandInteraction, timeStamp: any, role_backup_model: any, user_command = false) {
+    async execute(interaction: ChatInputCommandInteraction | UserContextMenuCommandInteraction, timeStamp: any, role_backup_model: Model<RoleBackup_Interface>, user_command = false) {
 
         // interaction is either a UserContextMenuCommandInteraction or a ChatInputCommandInteraction depending on user_command
         interaction = user_command ? interaction as UserContextMenuCommandInteraction : interaction as ChatInputCommandInteraction;
@@ -18,7 +21,7 @@ module.exports = {
         // If no member was found
         if(!member) {
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to backup roles but no member was found. user_command = ${user_command}`);
-            return await interaction.reply({content : "No member was found.", ephemeral : true});
+            return await interaction.reply({content : "No member was found.", flags: MessageFlags.Ephemeral});
         }
 
         // Collection of all the roles for a given member.

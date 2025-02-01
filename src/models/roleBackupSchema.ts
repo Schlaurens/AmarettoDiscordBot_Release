@@ -1,6 +1,32 @@
 import mongoose from 'mongoose';
 
-const role_backup_schema = new mongoose.Schema({
+export interface RoleBackup_Interface {
+    name: string;
+    displayName: string;
+    user_id: string;
+    timestamp: string;
+    roles: [
+        {
+            guild: string;
+            id: string;
+            name: string;
+            color: number;
+            hoist: boolean;
+            rawPosition: number;
+            managed: boolean;
+            mentionable: boolean;
+            tags: [
+                {
+                    botId: string;
+                    integrationId: string;
+                    premiumSubscriberRole: boolean;
+                }
+            ]
+        }
+    ];
+}
+
+const role_backup_schema = new mongoose.Schema<RoleBackup_Interface>({
     name: {type: String, required: true},
     displayName: {type: String, required: false},
     user_id: {type: String, required: true, unique: true},

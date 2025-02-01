@@ -1,7 +1,8 @@
 import { 
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder, 
-    ChatInputCommandInteraction 
+    ChatInputCommandInteraction,
+    MessageFlags 
 } from 'discord.js';
 
 const { 
@@ -42,7 +43,7 @@ module.exports = {
 
         //Permission Check
         if(!permissions.check_permissions("haltStop", interaction.member)) {
-            await interaction.reply({content : '**Insufficient permissions.**', ephemeral : true});
+            await interaction.reply({content : '**Insufficient permissions.**', flags: MessageFlags.Ephemeral});
             return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to use the haltStop command has insufficient permissions. user_command = ${user_command}`);
         }
 

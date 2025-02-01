@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
-const picture_schema = new mongoose.Schema({
+export interface Picture_Interface {
+    name: string;
+    url: string;
+}
+
+const picture_schema = new mongoose.Schema<Picture_Interface>({
     name: {type: String, require: true, unique: true},
     url: {type: String, require: true, unique: true}
 })

@@ -5,7 +5,8 @@ import {
     UserContextMenuCommandInteraction, 
     ChatInputCommandInteraction, 
     GuildMember,
-    Colors 
+    Colors, 
+    MessageFlags
 } from "discord.js";
 
 const timeStamp = require('../lib/timeStamp.ts');
@@ -35,7 +36,7 @@ module.exports = {
             const sEmbed = new EmbedBuilder()
             .setColor(Colors.DarkBlue)
             .setDescription(`Couldn't find user **${interaction.options.data[0]?.value ?? "Unknown"}**`)
-            await interaction.reply({embeds: [sEmbed], ephemeral: true});
+            await interaction.reply({embeds: [sEmbed], flags: MessageFlags.Ephemeral});
 
             console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} tried to view the userinfo of an unknown user ${interaction.options.data[0]?.value ?? "Unknown"}.`);
             return

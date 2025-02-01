@@ -6,7 +6,8 @@ import {
   PresenceStatusData,
   SlashCommandBuilder,
   EmbedBuilder,
-  ActivityType 
+  ActivityType,
+  MessageFlags
 } from 'discord.js';
 
 const {
@@ -126,7 +127,7 @@ module.exports = {
       embed.setColor("#71368A");
       embed.setDescription(`Successfully updated your ${status} to **${type}**.`);
 
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 
       return console.log(`${timeStamp.getTimeStamp()} ${interaction.user.displayName} updated Amaretto's ${status} to ${type}.`);
     }

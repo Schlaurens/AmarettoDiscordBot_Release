@@ -3,12 +3,14 @@ import {
     GuildMember,
     User 
 } from 'discord.js';
+import type { Model } from 'mongoose';
+import { Roast_Interface } from '../../models/roastSchema';
 
 module.exports = {
     name: 'roast_get',
-    async execute(interaction: ChatInputCommandInteraction, timeStamp: any, roast_model: any, get_roast: any) {
+    async execute(interaction: ChatInputCommandInteraction, timeStamp: any, roast_model: Model<Roast_Interface>, get_roast: any) {
         
-        const roast_size = await roast_model.count();
+        const roast_size = await roast_model.countDocuments();
         const options = interaction.options;
 
         // Roast the mentioned person
